@@ -1,0 +1,10 @@
+import "HTTPListener.thingml"
+
+configuration MainCPUCfg {
+	instance B : Bridge
+	instance H : HTTPServer
+	instance serial1 : LinuxSerial2
+	
+	connector H.bridge => B.Serial1
+	connector serial1.serial => B.serial
+}

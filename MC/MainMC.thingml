@@ -1,0 +1,60 @@
+import "Bridge.thingml"
+
+configuration MainMCCfg {
+	instance C : IMUController
+	instance B : Bridge
+	instance A : ArduinoScheduler
+	
+	connector C.arduino => A.arduino
+	connector C.Serial1 => B.Serial1
+}
+
+thing IMUController includes ArduinoApplication {
+	property led1 : UInt8 = 7
+	property led2 : UInt8 = 8
+	property IMU : UInt8 = 3
+	property led1On : Boolean = false
+	
+	statechart IMUCCrt init Init {
+		state Init {
+			transition -> Setup event arduino?ready
+		}
+		
+		state Setup {
+			on entry do
+				arduino!setOutput(led1)
+				arduino!setOutput(led2)
+				arduino!setDigitalLow(led2)
+			end
+			
+			transition -> Loop
+		}
+		
+		state Loop {
+			on entry do
+				'float f = (float) analogRead('& IMU &');'
+				if (('f' < 512) and (not(led1On))) do
+					arduino!setDigitalHigh(led1)
+					led1On = true
+				end
+				if (not('f' < 512) and (led1On)) do
+					arduino!setDigitalLow(led1)
+					led1On = false
+				end
+				Serial1!Measure('f')
+			end
+			
+			internal event e :Serial1?CommandStop action do
+				arduino!setDigitalLow(led2)
+			end
+			
+			internal event e :Serial1?CommandStart action do
+				arduino!setDigitalHigh(led2)
+			end
+			
+			transition -> Loop event arduino?100ms_interrupt
+		}
+	
+	}
+}
+	

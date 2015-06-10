@@ -1,0 +1,134 @@
+import "../lib/Msgs.thingml"
+//import "LinuxSerial.thingml"
+import "./LinuxSerial2.thingml"
+
+thing fragment ReadyMsg {
+	message CPUBridgeReady();
+}
+
+thing fragment BridgeClient includes BridgeMsgs, ReadyMsg  {
+	required port bridge {
+		sends CommandStop, CommandStart
+		
+		receives Measure, CPUBridgeReady
+	}
+}
+
+thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg {
+	provided port Serial1 {
+		receives CommandStop, CommandStart
+		sends Measure, CPUBridgeReady
+	}
+	
+	property START_BYTE : Byte = 18
+	property STOP_BYTE : Byte = 19
+	property ESCAPE_BYTE : Byte = 125
+	property Buffer : Byte[64]
+	property MsgSize : Byte = 0
+	property bps : Int16 = 115200
+	
+	function SerialSend(b : Byte) do
+		if((b == START_BYTE) or (b == STOP_BYTE) or (b == ESCAPE_BYTE)) do
+			serial!serial_tx(ESCAPE_BYTE)
+		end
+		serial!serial_tx(b)
+	end
+	
+	function SerialStart() do
+		serial!serial_tx(START_BYTE)
+	end
+	
+	function SerialStop() do
+		serial!serial_tx(STOP_BYTE)
+	end
+	
+	function parse() do
+		'long l;
+		uint16_t msgID = 256 * '&Buffer[0]&' + '&Buffer[1]&';
+		switch(msgID){
+			case 1://Measure
+				l = ('&Buffer[4]&' >> 24);
+				l += ('&Buffer[5]&' >> 16);
+				l += ('&Buffer[6]&' >> 8);
+				l += '&Buffer[7]&';
+				
+				float * f = (float *) &l;
+				'Serial1!Measure('*f')'
+			break;
+		}'
+	end
+	
+	statechart BridgeChart init Init {
+		state Init {
+			on entry do
+				serial!serial_open("/dev/ttyATH0", bps)
+			end
+			
+			transition -> Active event e : serial?serial_opened action do
+				Serial1!CPUBridgeReady()
+			end
+		}
+		
+		composite state Active init Idle {
+			
+			internal event e : serial?serial_rx action do
+				//print "[Bridge] received: " + e.b
+				//print "\n"
+			end
+			
+			internal event e : Serial1?CommandStart action do
+				SerialStart()
+				
+				SerialSend('0')
+				SerialSend('11')
+				
+				SerialSend('0')
+				SerialSend('1')
+				
+				
+				SerialStop()
+			end
+			internal event e : Serial1?CommandStop action do
+				SerialStart()
+				
+				SerialSend('0')
+				SerialSend('12')
+				
+				SerialSend('0')
+				SerialSend('1')
+				
+				SerialStop()
+			end
+			
+			state Idle {
+				transition -> Reading event e : serial?serial_rx guard e.b == START_BYTE
+			}
+			state Reading {
+				
+				transition -> Error event e : serial?serial_rx guard MsgSize > 31
+				transition -> Escaping event e : serial?serial_rx guard e.b == ESCAPE_BYTE
+				transition -> Idle event e : serial?serial_rx guard e.b == STOP_BYTE action do
+					parse()
+					MsgSize = 0
+				end
+				transition -> Reading event e : serial?serial_rx action do
+					Buffer[MsgSize] = e.b
+					MsgSize = MsgSize + 1
+				end
+			}
+			state Escaping {
+				
+				transition -> Error event e : serial?serial_rx guard MsgSize > 31
+				transition -> Reading event e : serial?serial_rx action do
+					Buffer[MsgSize] = e.b
+					MsgSize = MsgSize + 1
+				end
+			}
+			state Error {
+				transition -> Idle action do
+					MsgSize = 0
+				end
+			}
+		}
+	}
+}

@@ -1,0 +1,30 @@
+import "../lib/_Datatypes.thingml"
+
+thing fragment SerialMsgs {
+	message serial_open(device : String, baudrate : UInt32);
+	message serial_close();
+	message serial_tx(b : Byte);
+	message serial_rx(b : Byte);
+	message serial_opened();
+	message serial_closed();
+}
+
+thing fragment Serial includes SerialMsgs 
+{
+	required port serial 
+	@sync_send "true"
+	{
+		receives serial_open, serial_close, serial_tx
+		sends serial_rx, serial_closed, serial_opened
+	}
+}
+
+thing fragment SerialClientPort includes SerialMsgs 
+{
+	provided port serial 
+	@sync_send "true"
+	{
+		sends serial_open, serial_close, serial_tx
+		receives serial_rx, serial_closed, serial_opened
+	}
+}

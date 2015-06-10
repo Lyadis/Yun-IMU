@@ -1,0 +1,9 @@
+import "_Datatypes.thingml"
+
+thing fragment BridgeMsgs {
+    
+    message CommandStop();
+    message CommandStart();
+    message Measure(m : Float);
+
+}
