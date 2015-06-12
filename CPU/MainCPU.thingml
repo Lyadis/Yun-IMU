@@ -8,3 +8,4 @@ configuration MainCPUCfg {
 	connector H.bridge => B.Serial1
 	connector serial1.serial => B.serial
 }
+	
