@@ -1,11 +1,14 @@
 import "HTTPListener.thingml"
+//import "WebSocketsServer.thingml"
 
 configuration MainCPUCfg {
 	instance B : Bridge
 	instance H : HTTPServer
 	instance serial1 : LinuxSerial2
+	instance WS : WSServer
 	
 	connector H.bridge => B.Serial1
+	connector B.WSService => WS.WSService
 	connector serial1.serial => B.serial
 }
 	

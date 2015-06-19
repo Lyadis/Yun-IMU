@@ -1,6 +1,7 @@
 import "../lib/Msgs.thingml"
 //import "LinuxSerial.thingml"
 import "./LinuxSerial2.thingml"
+import "./WebSocketsServer.thingml"
 
 thing fragment ReadyMsg {
 	message CPUBridgeReady();
@@ -14,7 +15,7 @@ thing fragment BridgeClient includes BridgeMsgs, ReadyMsg  {
 	}
 }
 
-thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg {
+thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg, WSClient {
 	provided port Serial1 {
 		receives CommandStop, CommandStart
 		sends Measure, CPUBridgeReady
@@ -54,6 +55,7 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg {
 				
 				float * f = (float *) &l;
 				'Serial1!Measure('*f')'
+				'WSService!sendM('l')'
 			break;
 		}'
 	end
@@ -62,6 +64,7 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg {
 		state Init {
 			on entry do
 				serial!serial_open("/dev/ttyATH0", bps)
+				WSService!WSStart(9000)
 			end
 			
 			transition -> Active event e : serial?serial_opened action do
@@ -70,11 +73,6 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg {
 		}
 		
 		composite state Active init Idle {
-			
-			internal event e : serial?serial_rx action do
-				//print "[Bridge] received: " + e.b
-				//print "\n"
-			end
 			
 			internal event e : Serial1?CommandStart action do
 				SerialStart()
@@ -89,6 +87,30 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg {
 				SerialStop()
 			end
 			internal event e : Serial1?CommandStop action do
+				SerialStart()
+				
+				SerialSend('0')
+				SerialSend('12')
+				
+				SerialSend('0')
+				SerialSend('1')
+				
+				SerialStop()
+			end
+			
+			internal event e : WSService?CMDStart action do
+				SerialStart()
+				
+				SerialSend('0')
+				SerialSend('11')
+				
+				SerialSend('0')
+				SerialSend('1')
+				
+				
+				SerialStop()
+			end
+			internal event e : WSService?CMDStop action do
 				SerialStart()
 				
 				SerialSend('0')

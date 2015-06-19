@@ -20,8 +20,8 @@ extern "C" {
 
 // BEGIN: Code from the c_header annotation HTTPServer
 
-#include "../../../lib/microhttpd/platform.h"
-#include "../../../lib/microhttpd/microhttpd.h"
+//#include <platform.h>
+#include<microhttpd.h>
 
 #define PAGE "<html><head><title>libmicrohttpd demo</title></head><body>Query string for &quot;%s&quot; was &quot;%s&quot;</body></html>"
 

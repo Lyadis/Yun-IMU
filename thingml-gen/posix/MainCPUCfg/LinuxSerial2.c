@@ -236,19 +236,6 @@ default: break;
 }
 
 // Event Handlers for incoming messages:
-void LinuxSerial2_handle_serial_serial_tx(struct LinuxSerial2_Instance *_instance, uint8_t b) {
-uint8_t LinuxSerial2_LinuxSerialImpl_State_event_consumed = 0;
-if (_instance->LinuxSerial2_LinuxSerialImpl_State == LINUXSERIAL2_LINUXSERIALIMPL_RUNNING_STATE) {
-if (LinuxSerial2_LinuxSerialImpl_State_event_consumed == 0 && 1) {
-{
-_instance->LinuxSerial2_LinuxSerialImpl_success__var = f_LinuxSerial2_send_byte(_instance, _instance->LinuxSerial2_LinuxSerialImpl_serial_device__var, b);
-printf( "[LinuxSerial] wrote<%i>", b);
-printf( " returns %i \n", _instance->LinuxSerial2_LinuxSerialImpl_success__var);
-}
-LinuxSerial2_LinuxSerialImpl_State_event_consumed = 1;
-}
-}
-}
 void LinuxSerial2_handle_serial_serial_open(struct LinuxSerial2_Instance *_instance, char * device, uint32_t baudrate) {
 uint8_t LinuxSerial2_LinuxSerialImpl_State_event_consumed = 0;
 if (_instance->LinuxSerial2_LinuxSerialImpl_State == LINUXSERIAL2_LINUXSERIALIMPL_RUNNING_STATE) {
@@ -267,6 +254,19 @@ LinuxSerial2_send_serial_serial_opened(_instance);
 fprintf(stdout, "[LinuxSerial] opened\n");
 
 }
+}
+LinuxSerial2_LinuxSerialImpl_State_event_consumed = 1;
+}
+}
+}
+void LinuxSerial2_handle_serial_serial_tx(struct LinuxSerial2_Instance *_instance, uint8_t b) {
+uint8_t LinuxSerial2_LinuxSerialImpl_State_event_consumed = 0;
+if (_instance->LinuxSerial2_LinuxSerialImpl_State == LINUXSERIAL2_LINUXSERIALIMPL_RUNNING_STATE) {
+if (LinuxSerial2_LinuxSerialImpl_State_event_consumed == 0 && 1) {
+{
+_instance->LinuxSerial2_LinuxSerialImpl_success__var = f_LinuxSerial2_send_byte(_instance, _instance->LinuxSerial2_LinuxSerialImpl_serial_device__var, b);
+printf( "[LinuxSerial] wrote<%i>", b);
+printf( " returns %i \n", _instance->LinuxSerial2_LinuxSerialImpl_success__var);
 }
 LinuxSerial2_LinuxSerialImpl_State_event_consumed = 1;
 }

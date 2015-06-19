@@ -42,8 +42,8 @@ int16_t LinuxSerial2_LinuxSerialImpl_success__var;
 
 // Declaration of prototypes outgoing messages:
 void LinuxSerial2_LinuxSerialImpl_OnEntry(int state, struct LinuxSerial2_Instance *_instance);
-void LinuxSerial2_handle_serial_serial_tx(struct LinuxSerial2_Instance *_instance, uint8_t b);
 void LinuxSerial2_handle_serial_serial_open(struct LinuxSerial2_Instance *_instance, char * device, uint32_t baudrate);
+void LinuxSerial2_handle_serial_serial_tx(struct LinuxSerial2_Instance *_instance, uint8_t b);
 // Declaration of callbacks for incomming messages:
 void register_LinuxSerial2_send_serial_serial_rx_listener(void (*_listener)(struct LinuxSerial2_Instance*, uint8_t));
 void register_LinuxSerial2_send_serial_serial_closed_listener(void (*_listener)(struct LinuxSerial2_Instance*));
