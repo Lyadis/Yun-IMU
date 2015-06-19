@@ -123,9 +123,15 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg, WSClient {
 			end
 			
 			state Idle {
+				on entry do
+					'printf("[Bridge] Idle");'
+				end
 				transition -> Reading event e : serial?serial_rx guard e.b == START_BYTE
 			}
 			state Reading {
+				on entry do
+					'printf("[Bridge] Reading");'
+				end
 				
 				transition -> Error event e : serial?serial_rx guard MsgSize > 31
 				transition -> Escaping event e : serial?serial_rx guard e.b == ESCAPE_BYTE
