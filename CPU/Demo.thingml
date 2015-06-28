@@ -1,0 +1,34 @@
+import "../lib/_Datatypes.thingml"
+
+thing fragment WSMsgs {
+	message DataFrequency(f : Float); @code "101"
+	message CMDStop(); @code "102"
+	message CMDStart(); @code "103"
+}
+
+...
+
+thing fragment WSUser includes WSMsgs {
+	required port WSService {
+		sends sendM
+		receives CMDStop, CMDStart
+	}
+}
+
+...
+
+configuration AR9331Cfg 
+@c_external "Out:WebSocket:*"
+{
+	instance B : Bridge
+	instance H : HTTPServer
+	instance serial1 : LinuxSerial2
+	
+	connector H.bridge => B.Serial1
+	connector serial1.serial => B.serial
+	connector B.WSService => Out.WebSocket
+	@c_external_init "InitWebSocket(9000)"
+	@c_external_listen "WebSocketListener"
+	@c_external_send "WebSocketSend"
+	
+}
