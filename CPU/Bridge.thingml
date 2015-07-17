@@ -46,16 +46,24 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg, WSClient {
 	function parse() do
 		'long l;
 		uint16_t msgID = 256 * '&Buffer[0]&' + '&Buffer[1]&';
+		
 		switch(msgID){
 			case 1://Measure
-				l = ('&Buffer[4]&' >> 24);
-				l += ('&Buffer[5]&' >> 16);
-				l += ('&Buffer[6]&' >> 8);
-				l += '&Buffer[7]&';
-				
-				float * f = (float *) &l;
-				'Serial1!Measure('*f')'
-				'WSService!sendM('l')'
+				if('& MsgSize &' == 8) {
+					l = (('&Buffer[4]&' << 24));
+					l += (('&Buffer[5]&' << 16));
+					l += (('&Buffer[6]&' << 8));
+					l += (('&Buffer[7]&') & 0xFF);
+					printf("Buffer: 4:%i", '&Buffer[4]&');
+					printf(" 5:%i", '&Buffer[5]&');
+					printf(" 6:%i", '&Buffer[6]&');
+					printf(" 7:%i", '&Buffer[7]&');
+					printf(" -> l:%i where", l);
+					printf(" -> shifted6:%i \n", (('&Buffer[6]&' << 8)));
+					float * f = (float *) &l;
+					'Serial1!Measure('l')'
+					'WSService!sendM('l')'
+				}
 			break;
 		}'
 	end
@@ -124,13 +132,13 @@ thing Bridge includes BridgeMsgs, SerialClientPort, ReadyMsg, WSClient {
 			
 			state Idle {
 				on entry do
-					'printf("[Bridge] Idle");'
+					//'printf("[Bridge] Idle");'
 				end
 				transition -> Reading event e : serial?serial_rx guard e.b == START_BYTE
 			}
 			state Reading {
 				on entry do
-					'printf("[Bridge] Reading");'
+					//'printf("[Bridge] Reading");'
 				end
 				
 				transition -> Error event e : serial?serial_rx guard MsgSize > 31

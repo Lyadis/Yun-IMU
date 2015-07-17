@@ -35,14 +35,14 @@ int Bridge_bps__var;
 
 // Declaration of prototypes outgoing messages:
 void Bridge_BridgeChart_OnEntry(int state, struct Bridge_Instance *_instance);
-void Bridge_handle_Serial1_CommandStop(struct Bridge_Instance *_instance);
 void Bridge_handle_Serial1_CommandStart(struct Bridge_Instance *_instance);
+void Bridge_handle_Serial1_CommandStop(struct Bridge_Instance *_instance);
+void Bridge_handle_WSService_CMDStart(struct Bridge_Instance *_instance);
+void Bridge_handle_WSService_CMDStop(struct Bridge_Instance *_instance);
 void Bridge_handle_serial_serial_opened(struct Bridge_Instance *_instance);
 void Bridge_handle_serial_serial_rx(struct Bridge_Instance *_instance, uint8_t b);
-void Bridge_handle_WSService_CMDStop(struct Bridge_Instance *_instance);
-void Bridge_handle_WSService_CMDStart(struct Bridge_Instance *_instance);
 // Declaration of callbacks for incomming messages:
-void register_Bridge_send_Serial1_Measure_listener(void (*_listener)(struct Bridge_Instance*, float));
+void register_Bridge_send_Serial1_Measure_listener(void (*_listener)(struct Bridge_Instance*, long));
 void register_Bridge_send_Serial1_CPUBridgeReady_listener(void (*_listener)(struct Bridge_Instance*));
 void register_Bridge_send_serial_serial_open_listener(void (*_listener)(struct Bridge_Instance*, char *, uint32_t));
 void register_Bridge_send_serial_serial_close_listener(void (*_listener)(struct Bridge_Instance*));

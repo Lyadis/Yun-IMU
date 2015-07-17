@@ -2,8 +2,22 @@ import "_Datatypes.thingml"
 
 thing fragment BridgeMsgs {
     
-    message CommandStop();
-    message CommandStart();
-    message Measure(m : Float);
+    //Serial Communications CPU - MCU
+	    //From Processor to MCU
+	    message CommandStop() @code "15" 
+	    	@synch_ack "ACKCommand" @timeout "100" @retry "5";
+	    message CommandStart() @code "16" 
+	    	@synch_ack "ACKCommand" @timeout "100" @retry "5";
+	    //From MCU to Processor
+	    message ACKCommand() @code "17";
+	    message Measure(m : Long) @code "18";
+    //Communications with the data storage Server
+    	message pushData(data : String) @code "19" 
+    		@request_response "pushResponse" @timeout "5000";
+    	message pushResponse(Error : Integer) @code "19";
 
+}
+
+thing fragment bluff{
+	message bluff() @bluff "bluff";
 }

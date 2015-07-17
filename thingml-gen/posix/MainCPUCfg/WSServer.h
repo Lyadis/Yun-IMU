@@ -57,8 +57,8 @@ uint8_t WSServer_Running__var;
 
 // Declaration of prototypes outgoing messages:
 void WSServer_ServerChart_OnEntry(int state, struct WSServer_Instance *_instance);
-void WSServer_handle_WSService_WSStop(struct WSServer_Instance *_instance);
 void WSServer_handle_WSService_WSStart(struct WSServer_Instance *_instance, uint16_t Port);
+void WSServer_handle_WSService_WSStop(struct WSServer_Instance *_instance);
 void WSServer_handle_WSService_sendM(struct WSServer_Instance *_instance, long m);
 // Declaration of callbacks for incomming messages:
 void register_WSServer_send_WSService_WSStarted_listener(void (*_listener)(struct WSServer_Instance*));

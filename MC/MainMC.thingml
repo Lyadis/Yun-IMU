@@ -1,6 +1,7 @@
 import "Bridge.thingml"
 
-configuration MainMCCfg {
+configuration MainMCCfg 
+{
 	instance C : IMUController
 	instance B : Bridge
 	instance A : ArduinoScheduler
@@ -32,7 +33,7 @@ thing IMUController includes ArduinoApplication {
 		
 		state Loop {
 			on entry do
-				'float f = (float) analogRead('& IMU &');'
+				'long f = (long) analogRead('& IMU &');'
 				if (('f' < 512) and (not(led1On))) do
 					arduino!setDigitalHigh(led1)
 					led1On = true

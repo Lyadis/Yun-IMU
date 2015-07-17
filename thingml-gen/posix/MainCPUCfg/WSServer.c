@@ -525,7 +525,7 @@ static int
 				break;
 		
 			case LWS_CALLBACK_SERVER_WRITEABLE:
-				n = sprintf((char *)p, "%d", _WSServer_Instance->WSServer_M__var);
+				n = sprintf((char *)p, "%d", _instance->WSServer_M__var);
 				m = libwebsocket_write(wsi, p, n, LWS_WRITE_TEXT);
 				if (m < n) {
 					lwsl_err("ERROR %d writing to di socket\n", n);
@@ -817,22 +817,6 @@ default: break;
 }
 
 // Event Handlers for incoming messages:
-void WSServer_handle_WSService_WSStop(struct WSServer_Instance *_instance) {
-uint8_t WSServer_ServerChart_State_event_consumed = 0;
-if (_instance->WSServer_ServerChart_State == WSSERVER_SERVERCHART_RUNNING_STATE) {
-if (WSServer_ServerChart_State_event_consumed == 0 && 1) {
-WSServer_ServerChart_OnExit(WSSERVER_SERVERCHART_RUNNING_STATE, _instance);
-_instance->WSServer_ServerChart_State = WSSERVER_SERVERCHART_IDLE_STATE;
-{
-_instance->WSServer_Running__var = 0;
-fprintf(stdout, "[WSServer] Stop\n");
-
-}
-WSServer_ServerChart_OnEntry(WSSERVER_SERVERCHART_IDLE_STATE, _instance);
-WSServer_ServerChart_State_event_consumed = 1;
-}
-}
-}
 void WSServer_handle_WSService_WSStart(struct WSServer_Instance *_instance, uint16_t Port) {
 uint8_t WSServer_ServerChart_State_event_consumed = 0;
 if (_instance->WSServer_ServerChart_State == WSSERVER_SERVERCHART_IDLE_STATE) {
@@ -850,6 +834,22 @@ fprintf(stdout, "[WSServer] Started\n");
 WSServer_send_WSService_WSStarted(_instance);
 }
 WSServer_ServerChart_OnEntry(WSSERVER_SERVERCHART_RUNNING_STATE, _instance);
+WSServer_ServerChart_State_event_consumed = 1;
+}
+}
+}
+void WSServer_handle_WSService_WSStop(struct WSServer_Instance *_instance) {
+uint8_t WSServer_ServerChart_State_event_consumed = 0;
+if (_instance->WSServer_ServerChart_State == WSSERVER_SERVERCHART_RUNNING_STATE) {
+if (WSServer_ServerChart_State_event_consumed == 0 && 1) {
+WSServer_ServerChart_OnExit(WSSERVER_SERVERCHART_RUNNING_STATE, _instance);
+_instance->WSServer_ServerChart_State = WSSERVER_SERVERCHART_IDLE_STATE;
+{
+_instance->WSServer_Running__var = 0;
+fprintf(stdout, "[WSServer] Stop\n");
+
+}
+WSServer_ServerChart_OnEntry(WSSERVER_SERVERCHART_IDLE_STATE, _instance);
 WSServer_ServerChart_State_event_consumed = 1;
 }
 }

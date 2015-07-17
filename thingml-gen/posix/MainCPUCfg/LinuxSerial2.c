@@ -142,9 +142,9 @@ char buffer[INPUT_BUFFER_SIZE]; // Data read from the ESUSMS device
 				break;
 			}
 			else { // there is something to read
-				printf("[receiver] rx?");
+				//printf("[receiver] rx?");
 				n = read(device, &buffer, INPUT_BUFFER_SIZE * sizeof(char));
-				printf(" n=<%i>\n", n);
+				//printf(" n=<%i>\n", n);
 				if (n<0) {
 					perror("Error reading from Serial device");
 					break;
@@ -154,10 +154,10 @@ char buffer[INPUT_BUFFER_SIZE]; // Data read from the ESUSMS device
 					break;
 				}
 				else { // There are n incoming bytes in buffer
-					printf("[receiver] rx! <%i>\n", n);
+					//printf("[receiver] rx! <%i>\n", n);
 					for (i = 0; i<n; i++) {
 						
-						printf("[receiver] rx:<%i>\n", buffer[i]);
+						//printf("[receiver] rx:<%i>\n", buffer[i]);
 						
 LinuxSerial2_send_serial_serial_rx(_instance, buffer[i]);
 
